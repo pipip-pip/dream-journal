@@ -8,6 +8,16 @@ const PUBLIC_PATHS = ["/login", "/manifest.webmanifest", "/sw.js", "/icon", "/ap
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 
+  // Not set up yet: show a plain explanation instead of crashing.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return new NextResponse(
+      "<body style='font:18px system-ui;background:#0b1026;color:#e6e8f5;padding:40px;max-width:560px;margin:auto'>" +
+      "<h2>🌙 Almost there</h2><p>Supabase isn't connected yet. Add <code>NEXT_PUBLIC_SUPABASE_URL</code> and " +
+      "<code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to <code>.env.local</code> (or to Vercel), then restart. See README step 1.</p></body>",
+      { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } },
+    );
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
