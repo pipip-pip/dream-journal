@@ -34,6 +34,7 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+html { background: var(--bg2); }
 body {
   min-height: 100dvh;
   background: radial-gradient(ellipse at 20% -10%, var(--haze), transparent 60%),
@@ -113,7 +114,7 @@ button:disabled { opacity: 0.5; cursor: default; }
 .block { width: 100%; }
 .chip { min-height: 44px; padding: 8px 14px; font-size: 15px; }
 .chip.on { background: var(--accent); color: var(--accent-text); border-color: transparent; }
-.icon-btn { min-width: 44px; padding: 8px; }
+.icon-button { min-width: 44px; padding: 8px; }
 
 details summary { cursor: pointer; color: var(--muted); min-height: 44px; display: flex; align-items: center; list-style: none; }
 details summary::-webkit-details-marker { display: none; }
@@ -165,20 +166,54 @@ details summary::-webkit-details-marker { display: none; }
 }
 
 /* Calendar */
-.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-.cal .dow { font-size: 12px; color: var(--muted); padding: 4px 0; }
-.cal button {
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.calendar .dow { font-size: 12px; color: var(--muted); padding: 4px 0; }
+.calendar button {
   min-height: 48px; padding: 2px; border-radius: 12px; flex-direction: column; gap: 0;
   font-size: 13px; background: transparent; border-color: transparent;
 }
-.cal button.has { background: var(--card); border-color: var(--card-border); }
-.cal button.sel { border-color: var(--accent); }
-.cal button.today span:first-child { color: var(--accent); font-weight: 700; }
-.cal .ico { font-size: 16px; line-height: 1; min-height: 16px; }
+.calendar button.has { background: var(--card); border-color: var(--card-border); }
+.calendar button.sel { border-color: var(--accent); }
+.calendar button.today span:first-child { color: var(--accent); font-weight: 700; }
+.calendar .ico { font-size: 16px; line-height: 1; min-height: 16px; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 .list-item { display: block; color: inherit; }
 .toggle { display: inline-flex; border: 1px solid var(--card-border); border-radius: 999px; padding: 3px; }
-.toggle button { border: none; min-height: 36px; padding: 6px 14px; background: transparent; }
+.toggle button { white-space: nowrap; border: none; min-height: 36px; padding: 6px 14px; background: transparent; }
 .toggle button.on { background: var(--accent); color: var(--accent-text); }
 .banner { font-size: 14px; padding: 10px 14px; border-radius: 12px; background: var(--card); margin-bottom: 12px; }
+
+/* Small helpers used by the static version */
+[hidden] { display: none !important; }
+.serif { font-family: var(--serif); font-weight: 400; }
+.big-text { font-size: 20px; }
+.center { text-align: center; }
+.row.centered { justify-content: center; }
+.spaced { margin-top: 14px; }
+.no-top { margin-top: 0; }
+.subtitle { margin-top: -8px; }
+.sky-line { margin-top: -8px; }
+.big { min-height: 54px; font-size: 18px; }
+.narrow { width: 120px; }
+.month-name { font-size: 19px; }
+.legend { margin-bottom: 0; }
+.switch-row { margin-top: 16px; min-height: 44px; }
+.switch-row input { width: 22px; }
+#search { margin-bottom: 14px; }
+#extra-prompts { margin-top: 8px; }
+#extra-prompts .extra { margin-top: 10px; }
+.calendar .dow { font-size: 12px; color: var(--muted); padding: 4px 0; }
+.title-line { font-family: var(--serif); font-size: 18px; }
+.preview { color: var(--muted); font-size: 14px; }
+.reader-tools { justify-content: center; margin-bottom: 8px; }
+.reader-tools select { width: auto; min-height: 44px; border-radius: 999px; padding: 8px 14px; font-size: 16px; }
+.ritual-button { justify-content: flex-start; border-radius: 14px; margin-bottom: 8px; }
+.ritual-button .done { margin-left: auto; }
+.ritual textarea { min-height: 70px; }
+.thread.resolved { opacity: 0.55; }
+.thread.resolved .summary { text-decoration: line-through; }
+.fragment-card { text-align: center; margin-bottom: 0; }
+.fragment-card .key { font-size: 26px; }
+.person-card { margin-bottom: 0; }
+.list-item { cursor: pointer; }

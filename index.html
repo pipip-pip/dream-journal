@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="utf-8">
+  <!-- viewport-fit=cover lets the app use the whole iPhone screen, around the notch -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Dream Journal</title>
+  <meta name="description" content="Your day, turned into tonight's dream.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b1026">
+
+  <!-- These make it installable on the iPhone Home Screen, opening full screen like an app -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Dreams">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+
+  <!-- Apply the saved theme before the page appears, so it doesn't flash -->
+  <script>
+    (function () {
+      try {
+        var choice = JSON.parse(localStorage.getItem("theme") || '"auto"');
+        if (["auto", "day", "night"].indexOf(choice) < 0) choice = "auto";
+        var hour = new Date().getHours();
+        var theme = choice === "auto" ? (hour >= 6 && hour < 18 ? "day" : "night") : choice;
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Slow drifting specks of light in the background (filled in by app.js) -->
+  <div class="particles" id="particles" aria-hidden="true"></div>
+
+  <main class="shell">
+
+    <!-- ===== Tonight: the daily check-in ===== -->
+    <section id="tonight-tab">
+      <!-- The check-in form -->
+      <div id="checkin">
+        <div class="topbar">
+          <h1 id="tonight-title">Tonight</h1>
+          <button class="ghost chip theme-button" type="button">🌗 Auto</button>
+        </div>
+        <p class="muted small sky-line" id="sky-line"></p>
+
+        <div class="banner" id="no-key-banner" hidden>
+          To write dreams, add your OpenAI API key in <a href="#settings">⚙️ Settings</a>.
+        </div>
+
+        <div class="card">
+          <label class="label" for="checkin-text" id="checkin-question">What happened today?</label>
+          <textarea id="checkin-text" placeholder="A few words is enough…"></textarea>
+          <details id="extra-prompts">
+            <summary>＋ A few gentle prompts (optional)</summary>
+            <!-- filled in by app.js -->
+          </details>
+        </div>
+
+        <div class="card">
+          <span class="label">Mood</span>
+          <div class="row" id="mood-choices"></div>
+        </div>
+
+        <div class="card">
+          <span class="label">Tone</span>
+          <div class="row" id="tone-choices"></div>
+          <span class="label spaced">Length</span>
+          <div class="row" id="length-choices"></div>
+          <span class="label spaced">Mode</span>
+          <div class="row" id="mode-choices"></div>
+        </div>
+
+        <button class="primary block big" id="dream-button" type="button">Dream it</button>
+        <button class="ghost block" id="surprise-button" type="button" style="margin-top: 10px">✨ Surprise me</button>
+      </div>
+
+      <!-- While the dream is being written, and after -->
+      <div id="dreaming" hidden>
+        <div class="topbar">
+          <button class="ghost chip" id="new-checkin-button" type="button">← New check-in</button>
+        </div>
+        <div id="dream-error" class="card center" hidden>
+          <p class="serif big-text">The dream slipped away.</p>
+          <p class="muted" id="dream-error-text"></p>
+          <div class="row centered">
+            <button class="primary" id="retry-button" type="button">Try again</button>
+            <button class="ghost" id="edit-checkin-button" type="button">Edit check-in</button>
+          </div>
+        </div>
+        <div id="dream-stream" class="dream"></div>
+        <div id="dream-done"></div>
+      </div>
+    </section>
+
+    <!-- ===== Journal: calendar, search, on this day ===== -->
+    <section id="journal-tab" hidden>
+      <div class="topbar"><h1>Journal</h1></div>
+      <input type="search" id="search" placeholder="Search dreams and days…">
+      <div id="search-results" hidden></div>
+      <div id="journal-main">
+        <div id="on-this-day"></div>
+        <div class="card">
+          <div class="spread">
+            <button class="ghost icon-button" id="prev-month" type="button" aria-label="Previous month">‹</button>
+            <strong class="serif month-name" id="month-name"></strong>
+            <button class="ghost icon-button" id="next-month" type="button" aria-label="Next month">›</button>
+          </div>
+          <div class="calendar" id="calendar"></div>
+          <p class="muted small center legend">🌙 peaceful · ✨ mystical · 🌫️ eerie · ☁️ heavy day · ☀️ happy day</p>
+        </div>
+        <div id="day-view"></div>
+      </div>
+    </section>
+
+    <!-- ===== People and threads ===== -->
+    <section id="people-tab" hidden>
+      <div class="topbar">
+        <h1 id="people-title">People</h1>
+        <div class="toggle">
+          <button type="button" class="on" id="show-people">People</button>
+          <button type="button" id="show-threads">Threads</button>
+        </div>
+      </div>
+      <div id="people-list"></div>
+      <div id="threads-list" hidden></div>
+    </section>
+
+    <!-- ===== One person ===== -->
+    <section id="person-tab" hidden></section>
+
+    <!-- ===== One dream on its own ===== -->
+    <section id="dream-tab" hidden></section>
+
+    <!-- ===== Fragments shelf ===== -->
+    <section id="fragments-tab" hidden>
+      <div class="topbar"><h1>Fragments</h1></div>
+      <p class="muted small subtitle">Small things you carried back from your dreams.</p>
+      <div id="fragments-grid" class="grid"></div>
+    </section>
+
+    <!-- ===== Settings ===== -->
+    <section id="settings-tab" hidden>
+      <div class="topbar"><h1>Settings</h1><span class="muted small" id="save-message"></span></div>
+
+      <form class="card" id="openai-form">
+        <span class="label">OpenAI</span>
+        <p class="muted small no-top">Your key is saved only in this browser, never in the website's files. Add it on each device.</p>
+        <label class="label" for="openai-key">API key</label>
+        <input id="openai-key" type="password" autocomplete="off" placeholder="sk-...">
+        <label class="label spaced" for="openai-model">Model</label>
+        <input id="openai-model" autocomplete="off" autocapitalize="none">
+        <p class="muted small" id="openai-status"></p>
+        <div class="row">
+          <button class="primary" type="submit">Save</button>
+          <button class="ghost" type="button" id="openai-forget">Forget key</button>
+        </div>
+      </form>
+
+      <div class="card">
+        <span class="label">How literal are dreams?</span>
+        <input type="range" id="literalness" min="0" max="100" step="5">
+        <div class="spread muted small"><span>Close to real life</span><span>Fully dreamlike</span></div>
+        <span class="label spaced">Hard topics</span>
+        <div class="row" id="hard-topic-choices"></div>
+      </div>
+
+      <div class="card">
+        <span class="label">Default tone</span>
+        <div class="row" id="default-tone-choices"></div>
+        <span class="label spaced">Default length</span>
+        <div class="row" id="default-length-choices"></div>
+        <span class="label spaced">Default mode (after noon)</span>
+        <div class="row" id="default-mode-choices"></div>
+        <label class="spread switch-row">
+          <span>Show a waking thought</span>
+          <input type="checkbox" id="waking-thought-setting">
+        </label>
+      </div>
+
+      <div class="card">
+        <span class="label">Daily dream limit</span>
+        <p class="muted small no-top">Protects your API bill. Counts dreams written in the last 24 hours on this device.</p>
+        <input type="number" id="daily-limit" inputmode="numeric" min="1" max="200" class="narrow">
+      </div>
+
+      <div class="card">
+        <span class="label">Appearance</span>
+        <button class="chip theme-button" type="button">🌗 Auto</button>
+      </div>
+
+      <div class="card">
+        <span class="label">Backup and moving between devices</span>
+        <p class="muted small no-top">Everything lives in this browser only. Export now and then as a backup, and to move your journal to another device (import it there).</p>
+        <div class="row">
+          <button type="button" id="export-button">⬇️ Export everything</button>
+          <button type="button" id="import-button">⬆️ Import a backup or old journal</button>
+        </div>
+        <p class="muted small">Import understands this app's backups and both formats from the old app (“Dream Journal” and “Lanternwood”). Dreams you already have are skipped, so importing twice is safe.</p>
+        <input type="file" id="import-file" accept="application/json,.json" hidden>
+        <div class="banner" id="import-summary" hidden></div>
+        <p class="muted small" id="last-export"></p>
+      </div>
+
+      <div class="card">
+        <span class="label">Delete</span>
+        <button class="ghost danger" type="button" id="delete-all-button">Delete all my data on this device</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- The short breathing moment before a dream appears -->
+  <div class="breath" id="breath" hidden>
+    <div class="orb"></div>
+    <p class="muted serif big-text" id="breath-text">Breathe in…</p>
+    <button class="ghost" type="button" id="skip-breath">Skip</button>
+  </div>
+
+  <!-- Bottom tabs -->
+  <nav class="nav">
+    <a href="#tonight" data-tab="tonight"><span>🌙</span><span>Tonight</span></a>
+    <a href="#journal" data-tab="journal"><span>📖</span><span>Journal</span></a>
+    <a href="#people" data-tab="people"><span>👥</span><span>People</span></a>
+    <a href="#fragments" data-tab="fragments"><span>🗝️</span><span>Fragments</span></a>
+    <a href="#settings" data-tab="settings"><span>⚙️</span><span>Settings</span></a>
+  </nav>
+
+  <script src="prompt.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

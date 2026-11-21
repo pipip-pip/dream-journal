@@ -1,6 +1,6 @@
-// The dream-writer's instructions. Kept as a constant so it is byte-identical on
-// every request, which lets the API cache it (cheaper and faster).
-export const SYSTEM_PROMPT = `You write short dreams for a personal dream journal. The reader shares a
+// The dream-writer's instructions, sent to OpenAI with every dream.
+// Kept exactly the same every time, so OpenAI can cache it (cheaper and faster).
+const SYSTEM_PROMPT = `You write short dreams for a personal dream journal. The reader shares a
 little about their real day and mood. You write the dream they have that
 night, in second person ("you"), shaped by their day.
 
