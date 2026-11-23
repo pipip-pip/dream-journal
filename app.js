@@ -257,7 +257,8 @@ let checkinLength = settings.defaultLength;
 let checkinMode = new Date().getHours() < 12 ? "morning" : settings.defaultMode; // mornings start in Morning mode
 
 EXTRA_PROMPTS.forEach(function (prompt) {
-  const input = el("input", { id: "extra-" + prompt.key });
+  // Small text boxes, since these are now the main places to write
+  const input = el("textarea", { id: "extra-" + prompt.key, rows: 2, placeholder: "A few words is enough…" });
   extraInputs[prompt.key] = input;
   extraPrompts.append(el("div", { className: "extra" },
     el("label", { className: "label", htmlFor: input.id }, prompt.label), input));
@@ -290,6 +291,7 @@ Object.values(extraInputs).forEach(function (input) { input.addEventListener("in
   const draft = loadSaved("draft", null);
   if (!draft || draft.date !== localDate()) return;
   checkinText.value = draft.checkIn.text || "";
+  if (checkinText.value) document.getElementById("more-details").open = true; // show saved words
   EXTRA_PROMPTS.forEach(function (p) { extraInputs[p.key].value = draft.checkIn[p.key] || ""; });
   checkinMood = draft.mood || null;
   makeChoices(document.getElementById("mood-choices"), MOODS,
@@ -300,7 +302,7 @@ Object.values(extraInputs).forEach(function (input) { input.addEventListener("in
 function showTonightWords() {
   const morning = checkinMode === "morning";
   document.getElementById("tonight-title").textContent = morning ? "Good morning" : "Tonight";
-  document.getElementById("checkin-question").textContent = morning ? "What's ahead today?" : "What happened today?";
+  document.getElementById("checkin-question").textContent = morning ? "＋ Anything else about the day ahead?" : "＋ Anything else about today?";
   document.getElementById("dream-button").textContent = morning ? "Dream the day ahead" : "Dream it";
 }
 
@@ -523,7 +525,7 @@ function grabPartial(raw, key) {
 function buildDreamPrompt(checkIn, mood, date) {
   const day = parseDate(date);
   const lines = [
-    checkIn.text && "What happened: " + checkIn.text,
+    checkIn.text && "Anything else: " + checkIn.text,
     checkIn.good && "One good thing: " + checkIn.good,
     checkIn.bothered && "Something that bothered me: " + checkIn.bothered,
     checkIn.noticed && "Something I noticed: " + checkIn.noticed,

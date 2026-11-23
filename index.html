@@ -53,11 +53,11 @@
         </div>
 
         <div class="card">
-          <label class="label" for="checkin-text" id="checkin-question">What happened today?</label>
-          <textarea id="checkin-text" placeholder="A few words is enough…"></textarea>
-          <details id="extra-prompts">
-            <summary>＋ A few gentle prompts (optional)</summary>
-            <!-- filled in by app.js -->
+          <!-- The little prompts are the main way to write. app.js fills them in here. -->
+          <div id="extra-prompts"></div>
+          <details id="more-details">
+            <summary id="checkin-question">＋ Anything else about today?</summary>
+            <textarea id="checkin-text" aria-labelledby="checkin-question" placeholder="Optional. A few words is enough…"></textarea>
           </details>
         </div>
 

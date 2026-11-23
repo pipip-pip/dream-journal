@@ -201,8 +201,11 @@ details summary::-webkit-details-marker { display: none; }
 .switch-row { margin-top: 16px; min-height: 44px; }
 .switch-row input { width: 22px; }
 #search { margin-bottom: 14px; }
-#extra-prompts { margin-top: 8px; }
-#extra-prompts .extra { margin-top: 10px; }
+#extra-prompts .extra + .extra { margin-top: 14px; }
+#extra-prompts textarea { min-height: 64px; }
+#more-details { margin-top: 16px; }
+#more-details summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; }
+#more-details textarea { margin-top: 8px; }
 .calendar .dow { font-size: 12px; color: var(--muted); padding: 4px 0; }
 .title-line { font-family: var(--serif); font-size: 18px; }
 .preview { color: var(--muted); font-size: 14px; }
