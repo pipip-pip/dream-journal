@@ -560,8 +560,14 @@ function buildDreamPrompt(checkIn, mood, date) {
     : settings.literalness > 66 ? "Make it fully dreamlike; real details may transform freely."
     : "Balance real details with dream logic.";
 
+  // Season and moon only go to the model for "Surprise me" (no check-in to work from).
+  // Otherwise they tempt it into moonlit clichés.
+  const surprise = checkIn.surprise || lines.length === 0;
+
   return [
-    "Date: " + day.toDateString() + " · season: " + season(day) + " · moon: " + moonPhase(day),
+    surprise
+      ? "Date: " + day.toDateString() + " · season: " + season(day) + " · moon: " + moonPhase(day)
+      : "Date: " + day.toDateString(),
     "Mode: " + (checkinMode === "morning" ? "Morning dream (hopeful, about the day ahead)" : "Tonight's dream (about today)"),
     "Mood: " + (mood || "not given") + " · Tone: " + checkinTone + " · Length: " + checkinLength,
     "How literal: " + literal,
@@ -576,7 +582,7 @@ function buildDreamPrompt(checkIn, mood, date) {
       return "- " + (r.kind === "worry" ? "A worry they let drift away" : "An intention") + ": " + r.text;
     }).join("\n") + "\n(You may reflect these very gently.)" : "",
     "",
-    checkIn.surprise || lines.length === 0
+    surprise
       ? "The reader shared nothing today. Write a dream seeded only by the date, season and moon. Treat rest as a gift. Return empty peopleMentioned and newThreads."
       : "The reader's check-in:\n" + lines.join("\n"),
   ].filter(function (line) { return line !== ""; }).join("\n");

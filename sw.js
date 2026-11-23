@@ -1,7 +1,7 @@
 // Offline support: keeps a copy of the app's files so it opens without internet.
 // Your journal itself is in the browser's storage, so it's always there offline.
 // When you upload new files, bump the number in CACHE so phones pick them up.
-const CACHE = "dream-journal-v1";
+const CACHE = "dream-journal-v3";
 const FILES = ["./", "index.html", "style.css", "app.js", "prompt.js", "manifest.json",
                "icons/icon.svg", "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png"];
 
